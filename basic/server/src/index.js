@@ -1,5 +1,5 @@
-const { GraphQLServer } = require('graphql-yoga')
-const { Prisma } = require('prisma-binding')
+const { GraphQLServer } = require('graphql-yoga');
+const { Prisma } = require('prisma-binding');
 
 const resolvers = {
   Query: {
@@ -10,18 +10,24 @@ const resolvers = {
       return ctx.db.query.posts({ where: { isPublished: false } }, info)
     },
     post(parent, { id }, ctx, info) {
-      return ctx.db.query.post({ where: { id: id } }, info)
+      return ctx.db.query.post({ where: { id } }, info)
     },
   },
   Mutation: {
     createDraft(parent, { title, text }, ctx, info) {
       return ctx.db.mutation.createPost(
-        { data: { title, text, isPublished: false } },
+        {
+          data: {
+            title,
+            text,
+            isPublished: false,
+          },
+        },
         info,
       )
     },
     deletePost(parent, { id }, ctx, info) {
-      return ctx.db.mutation.deletePost({where: { id } }, info)
+      return ctx.db.mutation.deletePost({ where: { id } }, info)
     },
     publish(parent, { id }, ctx, info) {
       return ctx.db.mutation.updatePost(
@@ -42,9 +48,9 @@ const server = new GraphQLServer({
     ...req,
     db: new Prisma({
       typeDefs: 'src/generated/prisma.graphql',
-      endpoint: '__PRISMA_ENDPOINT__',
-      secret: 'mysecret123',
-      debug: true,
+      endpoint: '__PRISMA_ENDPOINT__', // the endpoint of the Prisma DB service
+      secret: 'mysecret123', // specified in database/prisma.yml
+      debug: true, // log all GraphQL queryies & mutations
     }),
   }),
 })
